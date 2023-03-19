@@ -5,13 +5,22 @@ NICHOLAS GJURAJ, XIAOLI FANG
 
 // arbitrary decisions for frame sizes
 const FRAME_HEIGHT = 500;
-const FRAME_WIDTH = 1000;
+const FRAME_WIDTH = 800;
 const MARGINS = {left: 50, right: 50, top: 50, bottom: 50};
 
 // visual dimensions based off of margins
 const VIS_HEIGHT = FRAME_HEIGHT - MARGINS.top - MARGINS.bottom;
 const VIS_WIDTH = FRAME_WIDTH - MARGINS.left - MARGINS.right;
 
+// changes color in response to score
+function color(s) {
+    if (parseFloat(s) < .7) {
+        return 'Orange';
+    }
+    else{
+        return 'Blue';
+    }
+}
 
 // bar graph frame
 const FRAME1 = d3.select("#v1")
@@ -35,17 +44,7 @@ function build_bar_plot() {
             }
         });
 
-        // changes color in response to score
-        function color(s) {
-            if (parseFloat(s) < .7) {
-                return 'Orange';
-            }
-            else{
-                return 'Blue';
-            }
-        }
-
-        // scale using the buckets
+        // scale x using the buckets
         const X_SCALE3 = d3.scaleBand()
             .domain(Object.keys(clms))
             .range([MARGINS.left, VIS_WIDTH])
@@ -53,7 +52,7 @@ function build_bar_plot() {
 
         // find max y
         const MAX_Y3 = d3.max(mdata, (d) => { return parseInt(d.count); })
-        // Creates the scale function using data
+        // scale y
         const Y_SCALE3 = d3.scaleLinear()
             .domain([0, MAX_Y3])
             .range([VIS_HEIGHT, 0]);
@@ -79,7 +78,7 @@ function build_bar_plot() {
             .attr("text-anchor", "middle")
             .style("font-size", "20px")
             .style("font-weight", 900)
-            .text("Acceptance chance distribution");
+            .text("Acceptance chance distribution amongst students.");
 
         // x-axis, skewed for readability
         FRAME1.append("g")
@@ -99,4 +98,90 @@ function build_bar_plot() {
     });
 }
 
+const FRAME2 = d3.select("#v2")
+    .append("svg")
+    .attr("height", FRAME_HEIGHT)
+    .attr("width", FRAME_WIDTH)
+    .attr('id', 'sf2')
+    .attr("class", "frame");
+
+// builds the scatter plot. bool serves as indication of newly selected axes
+function build_scatter_plot(flag) {
+    // clear (potentially) existing graph when (re)building
+    document.getElementById("sf2").innerHTML = '';
+    d3.csv("graddata/Admission_Predict_Ver1.1.csv").then((data) => {
+        console.log(data)
+        let s1 = '';
+        let s2 = '';
+        if(flag) {
+            let sel1 = document.getElementById('x_select');
+            s1 = sel1.options[sel1.selectedIndex].text;
+            let sel2 = document.getElementById('y_select');
+            s2 = sel2.options[sel2.selectedIndex].text;
+        }else {
+            s1 = 'GRE Score';
+            s2 = 'TOEFL Score';
+        }
+
+        // find max x
+        const MAX_X1 = d3.max(data, (d) => { return parseFloat(d[s1]); });
+
+        // scale x
+        const X_SCALE1 = d3.scaleLinear()
+            .domain([0, MAX_X1+0.1])
+            .range([0, VIS_WIDTH]);
+
+        // find max y
+        const MAX_Y1 = d3.max(data, (d) => { return parseFloat(d[s2]); })
+
+        // scale y
+        const Y_SCALE1 = d3.scaleLinear()
+            .domain([0, MAX_Y1+0.1])
+            .range([VIS_HEIGHT, 0]);
+
+        // plot all points
+        FRAME2.selectAll("points")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("cx", (d) => { return (X_SCALE1(d[s1]) + MARGINS.left); })
+            .attr("cy", (d) => { return (Y_SCALE1(d[s2]) + MARGINS.left); })
+            .attr("r", 3)
+            .attr("name", "p1")
+            .attr("id", (d) => { return 'dp' + d['Serial No.']; })
+            .attr("class", "point")
+            .style('fill', function(d) {
+                return color(d['Chance of Admit']);
+            })
+            .style('opacity', .5)
+            .style('stroke-width', 0);
+
+        // add (changing) title
+        FRAME2.append("text")
+            .attr("x", (VIS_WIDTH / 2 + MARGINS.left / 2))
+            .attr("y", (MARGINS.top / 2))
+            .attr("text-anchor", "middle")
+            .style("font-size", "20px")
+            .style("font-weight", 900)
+            .text(`${s1} plotted against ${s2}.`);
+
+        // x axis
+        FRAME2.append("g")
+            .attr("transform", "translate(" + MARGINS.left +
+                "," + (VIS_HEIGHT + MARGINS.top) + ")")
+            .call(d3.axisBottom(X_SCALE1).ticks(10))
+            .attr("font-size", '10px');
+
+        // y axis
+        FRAME2.append("g")
+            .attr("transform", "translate(" + MARGINS.left +
+                "," + (MARGINS.bottom) + ")")
+            .call(d3.axisLeft(Y_SCALE1).ticks(10))
+            .attr("font-size", '10px');
+
+    });
+}
+
+// create graphs
 build_bar_plot();
+build_scatter_plot(false);

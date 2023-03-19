@@ -35,7 +35,32 @@
 
 
             <div class=column>
-
+                <form>
+                    Select new x axis:
+                    <select id="x_select">
+                        <option>GRE Score</option>
+                        <option>TOEFL Score</option>
+                        <option>University Rating</option>
+                        <option>SOP</option>
+                        <option>LOR</option>
+                        <option>CGPA</option>
+                        <option>Research</option>
+                        <option>Chance of Admit</option>
+                    </select>
+                    Select new y axis:
+                    <select id="y_select">
+                        <option>GRE Score</option>
+                        <option>TOEFL Score</option>
+                        <option>University Rating</option>
+                        <option>SOP</option>
+                        <option>LOR</option>
+                        <option>CGPA</option>
+                        <option>Research</option>
+                        <option>Chance of Admit</option>
+                    </select>
+                    <br><br>
+                    <input type="button" onclick="build_scatter_plot(true)" value="Rebuild scatter plot">
+                </form>
                 <div id="v2"></div>
 
             </div>
