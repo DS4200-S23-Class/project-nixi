@@ -109,6 +109,8 @@ const FRAME2 = d3.select("#v2")
 function build_scatter_plot(flag) {
     // clear (potentially) existing graph when (re)building
     document.getElementById("sf2").innerHTML = '';
+    let x = document.getElementById("tt");
+        if(x){x.remove();}
     d3.csv("graddata/Admission_Predict_Ver1.1.csv").then((data) => {
         console.log(data)
         let s1 = '';
@@ -145,6 +147,7 @@ function build_scatter_plot(flag) {
             .append("div")
             .style("opacity", 0)
             .attr("class", "tooltip")
+            .attr('id', 'tt')
             .style("background-color", "#FEFBEA")
             .style("border", "solid")
             .style("border-width", "2px")
@@ -166,7 +169,7 @@ function build_scatter_plot(flag) {
                     '<br>SOP: ' + d['SOP'] +
                     '<br>TOEFL Score: ' + d['TOEFL Score'] +
                     '<br>University Rating: ' + d['University Rating'])
-                .style("left", (d3.pointer(event)[0]+990) + "px")
+                .style("left", (d3.pointer(event)[0]+995) + "px")
                 .style("top", (d3.pointer(event)[1]+315) + "px")
         }
         let mouseleave = function(d) {
