@@ -125,19 +125,54 @@ function build_scatter_plot(flag) {
 
         // find max x
         const MAX_X1 = d3.max(data, (d) => { return parseFloat(d[s1]); });
+        const MIN_X1 = d3.min(data, (d) => { return parseFloat(d[s1]); });
 
         // scale x
         const X_SCALE1 = d3.scaleLinear()
-            .domain([0, MAX_X1+0.1])
+            .domain([MIN_X1-0.1, MAX_X1+0.1])
             .range([0, VIS_WIDTH]);
 
         // find max y
         const MAX_Y1 = d3.max(data, (d) => { return parseFloat(d[s2]); })
+        const MIN_Y1 = d3.min(data, (d) => { return parseFloat(d[s2]); })
 
         // scale y
         const Y_SCALE1 = d3.scaleLinear()
-            .domain([0, MAX_Y1+0.1])
+            .domain([MIN_Y1-0.1, MAX_Y1+0.1])
             .range([VIS_HEIGHT, 0]);
+
+        let Tooltip = d3.select("#v2")
+            .append("div")
+            .style("opacity", 0)
+            .attr("class", "tooltip")
+            .style("background-color", "#FEFBEA")
+            .style("border", "solid")
+            .style("border-width", "2px")
+            .style("padding", "2px")
+
+        // Three function that change the tooltip when user hover / move / leave a cell
+        let mouseover = function(d) {
+            Tooltip
+                .style("opacity", 1)
+        }
+        let mousemove = function(event, d) {
+            Tooltip
+                .html("For this particular student..." +
+                    "<br>CGPA: " + d['CGPA'] +
+                    "<br>Chance of Admit: " + d['Chance of Admit'] +
+                    '<br>GRE Score: ' + d['GRE Score'] +
+                    '<br>LOR: ' + d['LOR'] +
+                    '<br>Research: ' + d['Research'] +
+                    '<br>SOP: ' + d['SOP'] +
+                    '<br>TOEFL Score: ' + d['TOEFL Score'] +
+                    '<br>University Rating: ' + d['University Rating'])
+                .style("left", (d3.pointer(event)[0]+1100) + "px")
+                .style("top", (d3.pointer(event)[1]+355) + "px")
+        }
+        let mouseleave = function(d) {
+            Tooltip
+                .style("opacity", 0)
+        }
 
         // plot all points
         FRAME2.selectAll("points")
@@ -154,7 +189,10 @@ function build_scatter_plot(flag) {
                 return color(d['Chance of Admit']);
             })
             .style('opacity', .5)
-            .style('stroke-width', 0);
+            .style('stroke-width', 0)
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave);
 
         // add (changing) title
         FRAME2.append("text")

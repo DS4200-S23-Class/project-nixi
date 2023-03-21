@@ -20,3 +20,9 @@ h1 {
     flex:50%;
     /*justify-content: none;*/
 }
+
+.tooltip{
+    position:absolute;
+    border: solid #362419;
+    padding: 2px;
+}
