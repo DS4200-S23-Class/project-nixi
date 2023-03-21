@@ -166,8 +166,8 @@ function build_scatter_plot(flag) {
                     '<br>SOP: ' + d['SOP'] +
                     '<br>TOEFL Score: ' + d['TOEFL Score'] +
                     '<br>University Rating: ' + d['University Rating'])
-                .style("left", (d3.pointer(event)[0]+1100) + "px")
-                .style("top", (d3.pointer(event)[1]+355) + "px")
+                .style("left", (d3.pointer(event)[0]+990) + "px")
+                .style("top", (d3.pointer(event)[1]+315) + "px")
         }
         let mouseleave = function(d) {
             Tooltip
