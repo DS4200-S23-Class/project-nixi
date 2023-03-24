@@ -12,6 +12,12 @@ const MARGINS = {left: 50, right: 50, top: 50, bottom: 50};
 const VIS_HEIGHT = FRAME_HEIGHT - MARGINS.top - MARGINS.bottom;
 const VIS_WIDTH = FRAME_WIDTH - MARGINS.left - MARGINS.right;
 
+// controls redrawing of graphs on hover.
+let flip = true
+// external scatter data
+let esd;
+d3.csv("graddata/Admission_Predict_Ver1.1.csv").then((td) => {esd = td});
+
 // changes color in response to score
 function color(s) {
     if (parseFloat(s) < .7) {
@@ -57,6 +63,41 @@ function build_bar_plot() {
             .domain([0, MAX_Y3])
             .range([VIS_HEIGHT, 0]);
 
+        //mouseover interactivity, draws border and shows the selected points in the bar in the corresponding scatter
+        let mouseover = function(event, d) {
+            if (flip){
+                flip = false
+                let bar = document.getElementById(d.score);
+                bar.style.stroke = 'black';
+                bar.style.strokeWidth = '2';
+                for (let i = 0; i < esd.length; i++){
+                    let sel = document.getElementById(`dp${esd[i]['Serial No.']}`)
+                    if(parseFloat(d.score)-.012<=parseFloat(esd[i]['Chance of Admit']) && parseFloat(esd[i]['Chance of Admit'])<=parseFloat(d.score)+.012){
+                        sel.style.opacity = '1';
+                        //sel.style.fill = 'red';
+                    }else{
+                        sel.style.opacity = '.03';
+                    }
+                }
+            }
+        }
+
+        //reset plots upon cursor leaving
+        let mouseleave = function() {
+            if(!flip){
+                flip = true
+                for(let key in clms){
+                    let bar = document.getElementById(key);
+                    bar.style.strokeWidth = '0';
+                }
+                for (let i = 0; i < esd.length; i++){
+                    let sel = document.getElementById(`dp${esd[i]['Serial No.']}`)
+                    sel.style.opacity = '.5';
+                    sel.style.fill = color(esd[i][['Chance of Admit']])
+                }
+            }
+        }
+
         // make bars
         FRAME1.selectAll("bar")
             .data(mdata)
@@ -69,7 +110,9 @@ function build_bar_plot() {
             .attr("width", X_SCALE3.bandwidth())
             .attr("height", (d) => { return (VIS_HEIGHT - Y_SCALE3(d.count)); })
             .attr("fill", (d) => { return color(d.score); })
-            .attr("opacity", 0.5);
+            .attr("opacity", 0.5)
+            .on("mouseover", mouseover)
+            .on("mouseleave", mouseleave);
 
         // title
         FRAME1.append("text")
@@ -98,6 +141,7 @@ function build_bar_plot() {
     });
 }
 
+// frame 2
 const FRAME2 = d3.select("#v2")
     .append("svg")
     .attr("height", FRAME_HEIGHT)
@@ -112,7 +156,6 @@ function build_scatter_plot(flag) {
     let x = document.getElementById("tt");
         if(x){x.remove();}
     d3.csv("graddata/Admission_Predict_Ver1.1.csv").then((data) => {
-        console.log(data)
         let s1 = '';
         let s2 = '';
         if(flag) {
@@ -143,6 +186,7 @@ function build_scatter_plot(flag) {
             .domain([MIN_Y1-0.1, MAX_Y1+0.1])
             .range([VIS_HEIGHT, 0]);
 
+        // tooltip design
         let Tooltip = d3.select("#v2")
             .append("div")
             .style("opacity", 0)
@@ -153,11 +197,13 @@ function build_scatter_plot(flag) {
             .style("border-width", "2px")
             .style("padding", "2px")
 
-        // Three function that change the tooltip when user hover / move / leave a cell
+        //mouse interactivity functions -- create tooltips.
         let mouseover = function(d) {
             Tooltip
                 .style("opacity", 1)
         }
+        
+        // populate the information about that point into tooltip
         let mousemove = function(event, d) {
             Tooltip
                 .html("For this particular student..." +
@@ -172,6 +218,8 @@ function build_scatter_plot(flag) {
                 .style("left", (d3.pointer(event)[0]+995) + "px")
                 .style("top", (d3.pointer(event)[1]+315) + "px")
         }
+
+        // hide tooltip on exit
         let mouseleave = function(d) {
             Tooltip
                 .style("opacity", 0)
