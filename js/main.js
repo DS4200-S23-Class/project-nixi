@@ -67,6 +67,7 @@ function build_bar_plot() {
         let mouseover = function(event, d) {
             if (flip){
                 flip = false
+                document.getElementById('lobf').style.opacity = '.1';
                 let bar = document.getElementById(d.score);
                 bar.style.stroke = 'black';
                 bar.style.strokeWidth = '2';
@@ -86,6 +87,7 @@ function build_bar_plot() {
         let mouseleave = function() {
             if(!flip){
                 flip = true
+                document.getElementById('lobf').style.opacity = '.5';
                 for(let key in clms){
                     let bar = document.getElementById(key);
                     bar.style.strokeWidth = '0';
@@ -268,6 +270,7 @@ function build_scatter_plot(flag) {
 
         // line of best fit w/ fade in
         FRAME2.append("line")
+            .attr('id','lobf')
             .attr("x1", X_SCALE1(MIN_X1) + MARGINS.left)
             .attr("y1", Y_SCALE1(y_at(MIN_X1)) + MARGINS.left)
             .attr("x2", X_SCALE1(MAX_X1) + MARGINS.left)
