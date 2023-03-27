@@ -202,7 +202,7 @@ function build_scatter_plot(flag) {
             Tooltip
                 .style("opacity", 1)
         }
-        
+
         // populate the information about that point into tooltip
         let mousemove = function(event, d) {
             Tooltip
@@ -230,8 +230,10 @@ function build_scatter_plot(flag) {
             .data(data)
             .enter()
             .append("circle")
-            .attr("cx", (d) => { return (X_SCALE1(d[s1]) + MARGINS.left); })
-            .attr("cy", (d) => { return (Y_SCALE1(d[s2]) + MARGINS.left); })
+            //.attr("cx", (d) => { return (X_SCALE1(d[s1]) + MARGINS.left); })
+            //.attr("cy", (d) => { return (Y_SCALE1(d[s2]) + MARGINS.left); })
+            .attr("cx",((X_SCALE1(MIN_X1)+X_SCALE1(MAX_X1))/2) + MARGINS.left)
+            .attr("cy",((Y_SCALE1(MIN_Y1)+Y_SCALE1(MAX_Y1))/2) + MARGINS.left)
             .attr("r", 3)
             .attr("name", "p1")
             .attr("id", (d) => { return 'dp' + d['Serial No.']; })
@@ -244,6 +246,38 @@ function build_scatter_plot(flag) {
             .on("mouseover", mouseover)
             .on("mousemove", mousemove)
             .on("mouseleave", mouseleave);
+
+        //linear regression, x is s1, y is s2
+        let summation_xy = 0;
+        let summation_y = 0;
+        let summation_x = 0;
+        let summation_x_sqr = 0;
+        for(let i=0;i<data.length; i++){
+            summation_x += parseFloat(data[i][s1]);
+            summation_y += parseFloat(data[i][s2]);
+            summation_xy += parseFloat(data[i][s1]) * parseFloat(data[i][s2]);
+            summation_x_sqr += parseFloat(data[i][s1]) * parseFloat(data[i][s1]);
+        }
+        let slope = ((data.length * summation_xy) - (summation_x * summation_y))/((data.length*summation_x_sqr)-(summation_x*summation_x));
+        let y_int = (summation_y - (slope*summation_x))/data.length;
+
+        // calculates y values from earlier calculated m&b
+        function y_at(x_val){
+            return (slope * x_val) + y_int;
+        }
+
+        // line of best fit w/ fade in
+        FRAME2.append("line")
+            .attr("x1", X_SCALE1(MIN_X1) + MARGINS.left)
+            .attr("y1", Y_SCALE1(y_at(MIN_X1)) + MARGINS.left)
+            .attr("x2", X_SCALE1(MAX_X1) + MARGINS.left)
+            .attr("y2", Y_SCALE1(y_at(MAX_X1)) + MARGINS.left)
+            .style("stroke", "red")
+            .style("stroke-width", '2')
+            .attr("opacity", '0')
+            .transition()
+            .duration(4000)
+            .attr("opacity", '.5');
 
         // add (changing) title
         FRAME2.append("text")
@@ -267,6 +301,14 @@ function build_scatter_plot(flag) {
                 "," + (MARGINS.bottom) + ")")
             .call(d3.axisLeft(Y_SCALE1).ticks(10))
             .attr("font-size", '10px');
+
+        // have data points fly in (superfluous)
+        FRAME2.selectAll("circle")
+            .transition()
+            .delay(function(d,i){return(i*3)})
+            .duration(2000)
+            .attr("cx", function (d) { return X_SCALE1(d[s1])+ MARGINS.left; } )
+            .attr("cy", function (d) { return Y_SCALE1(d[s2])+ MARGINS.left; } )
 
     });
 }
