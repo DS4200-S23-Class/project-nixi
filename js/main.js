@@ -143,6 +143,10 @@ function build_bar_plot() {
     });
 }
 
+// initialization of json object used for animations.
+let last_positioned = {};
+
+
 // frame 2
 const FRAME2 = d3.select("#v2")
     .append("svg")
@@ -227,6 +231,13 @@ function build_scatter_plot(flag) {
                 .style("opacity", 0)
         }
 
+        if(!flag){
+            for(let i=0;i<data.length;i++){
+                last_positioned[i] = {'x':((X_SCALE1(MIN_X1)+X_SCALE1(MAX_X1))/2) + MARGINS.left,
+                    'y':((Y_SCALE1(MIN_Y1)+Y_SCALE1(MAX_Y1))/2) + MARGINS.left};
+            }
+        }
+
         // plot all points
         FRAME2.selectAll("points")
             .data(data)
@@ -234,8 +245,10 @@ function build_scatter_plot(flag) {
             .append("circle")
             //.attr("cx", (d) => { return (X_SCALE1(d[s1]) + MARGINS.left); })
             //.attr("cy", (d) => { return (Y_SCALE1(d[s2]) + MARGINS.left); })
-            .attr("cx",((X_SCALE1(MIN_X1)+X_SCALE1(MAX_X1))/2) + MARGINS.left)
-            .attr("cy",((Y_SCALE1(MIN_Y1)+Y_SCALE1(MAX_Y1))/2) + MARGINS.left)
+            //.attr("cx",((X_SCALE1(MIN_X1)+X_SCALE1(MAX_X1))/2) + MARGINS.left)
+            //.attr("cy",((Y_SCALE1(MIN_Y1)+Y_SCALE1(MAX_Y1))/2) + MARGINS.left)
+            .attr("cx", (d) => { return last_positioned[parseInt(d['Serial No.'])-1]['x']; })
+            .attr("cy", (d) => { return last_positioned[parseInt(d['Serial No.'])-1]['y']; })
             .attr("r", 3)
             .attr("name", "p1")
             .attr("id", (d) => { return 'dp' + d['Serial No.']; })
@@ -312,6 +325,13 @@ function build_scatter_plot(flag) {
             .duration(2000)
             .attr("cx", function (d) { return X_SCALE1(d[s1])+ MARGINS.left; } )
             .attr("cy", function (d) { return Y_SCALE1(d[s2])+ MARGINS.left; } )
+
+        // update positions for movement.
+
+        for(let i=0;i<data.length;i++){
+            last_positioned[i] = {'x':X_SCALE1(data[i][s1])+ MARGINS.left,
+                'y':Y_SCALE1(data[i][s2])+ MARGINS.left};
+        }
 
     });
 }
