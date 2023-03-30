@@ -13,10 +13,11 @@ const VIS_HEIGHT = FRAME_HEIGHT - MARGINS.top - MARGINS.bottom;
 const VIS_WIDTH = FRAME_WIDTH - MARGINS.left - MARGINS.right;
 
 // controls redrawing of graphs on hover.
-let flip = true
+let flip = true;
 // external scatter data
 let esd;
 d3.csv("graddata/Admission_Predict_Ver1.1.csv").then((td) => {esd = td});
+console.log(esd);
 
 // changes color in response to score
 function color(s) {
@@ -47,7 +48,7 @@ function build_bar_plot() {
             return {
                 score: Object.keys(d)[0],
                 count: d[Object.keys(d)[0]]
-            }
+            };
         });
 
         // scale x using the buckets
@@ -57,22 +58,39 @@ function build_bar_plot() {
             .padding(0.2);
 
         // find max y
-        const MAX_Y3 = d3.max(mdata, (d) => { return parseInt(d.count); })
+        const MAX_Y3 = d3.max(mdata, (d) => { return parseInt(d.count); });
         // scale y
         const Y_SCALE3 = d3.scaleLinear()
             .domain([0, MAX_Y3])
             .range([VIS_HEIGHT, 0]);
 
+        // x axis label
+        FRAME1.append("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "middle")
+            .attr("x", (VIS_WIDTH / 2 + MARGINS.left / 2))
+            .attr("y", VIS_HEIGHT + MARGINS.top +MARGINS.bottom)
+            .text('Acceptance chance');
+        // y axis label
+        FRAME1.append("text")
+            .attr("class", "y label")
+            .attr("text-anchor", "middle")
+            .attr('x', -((VIS_HEIGHT/2)+MARGINS.top))
+            .attr("y", 6)
+            .attr("dy", ".75em")
+            .attr("transform", "rotate(-90)")
+            .text('Number of students');
+
         //mouseover interactivity, draws border and shows the selected points in the bar in the corresponding scatter
         let mouseover = function(event, d) {
             if (flip){
-                flip = false
+                flip = false;
                 document.getElementById('lobf').style.opacity = '.1';
                 let bar = document.getElementById(d.score);
                 bar.style.stroke = 'black';
                 bar.style.strokeWidth = '2';
                 for (let i = 0; i < esd.length; i++){
-                    let sel = document.getElementById(`dp${esd[i]['Serial No.']}`)
+                    let sel = document.getElementById(`dp${esd[i]['Serial No.']}`);
                     if(parseFloat(d.score)-.012<=parseFloat(esd[i]['Chance of Admit']) && parseFloat(esd[i]['Chance of Admit'])<=parseFloat(d.score)+.012){
                         sel.style.opacity = '1';
                         //sel.style.fill = 'red';
@@ -81,24 +99,24 @@ function build_bar_plot() {
                     }
                 }
             }
-        }
+        };
 
         //reset plots upon cursor leaving
         let mouseleave = function() {
             if(!flip){
-                flip = true
+                flip = true;
                 document.getElementById('lobf').style.opacity = '.5';
                 for(let key in clms){
                     let bar = document.getElementById(key);
                     bar.style.strokeWidth = '0';
                 }
                 for (let i = 0; i < esd.length; i++){
-                    let sel = document.getElementById(`dp${esd[i]['Serial No.']}`)
+                    let sel = document.getElementById(`dp${esd[i]['Serial No.']}`);
                     sel.style.opacity = '.5';
-                    sel.style.fill = color(esd[i][['Chance of Admit']])
+                    sel.style.fill = color(esd[i][['Chance of Admit']]);
                 }
             }
-        }
+        };
 
         // make bars
         FRAME1.selectAll("bar")
@@ -184,8 +202,8 @@ function build_scatter_plot(flag) {
             .range([0, VIS_WIDTH]);
 
         // find max y
-        const MAX_Y1 = d3.max(data, (d) => { return parseFloat(d[s2]); })
-        const MIN_Y1 = d3.min(data, (d) => { return parseFloat(d[s2]); })
+        const MAX_Y1 = d3.max(data, (d) => { return parseFloat(d[s2]); });
+        const MIN_Y1 = d3.min(data, (d) => { return parseFloat(d[s2]); });
 
         // scale y
         const Y_SCALE1 = d3.scaleLinear()
@@ -201,13 +219,13 @@ function build_scatter_plot(flag) {
             .style("background-color", "#FEFBEA")
             .style("border", "solid")
             .style("border-width", "2px")
-            .style("padding", "2px")
+            .style("padding", "2px");
 
         //mouse interactivity functions -- create tooltips.
         let mouseover = function(d) {
             Tooltip
-                .style("opacity", 1)
-        }
+                .style("opacity", 1);
+        };
 
         // populate the information about that point into tooltip
         let mousemove = function(event, d) {
@@ -222,14 +240,14 @@ function build_scatter_plot(flag) {
                     '<br>TOEFL Score: ' + d['TOEFL Score'] +
                     '<br>University Rating: ' + d['University Rating'])
                 .style("left", (d3.pointer(event)[0]+995) + "px")
-                .style("top", (d3.pointer(event)[1]+315) + "px")
-        }
+                .style("top", (d3.pointer(event)[1]+315) + "px");
+        };
 
         // hide tooltip on exit
         let mouseleave = function(d) {
             Tooltip
-                .style("opacity", 0)
-        }
+                .style("opacity", 0);
+        };
 
         if(!flag){
             for(let i=0;i<data.length;i++){
@@ -318,16 +336,32 @@ function build_scatter_plot(flag) {
             .call(d3.axisLeft(Y_SCALE1).ticks(10))
             .attr("font-size", '10px');
 
+        // x axis label
+        FRAME2.append("text")
+            .attr("class", "x label")
+            .attr("text-anchor", "middle")
+            .attr("x", (VIS_WIDTH / 2 + MARGINS.left / 2))
+            .attr("y", VIS_HEIGHT + MARGINS.top +MARGINS.bottom)
+            .text(s1);
+        // y axis label
+        FRAME2.append("text")
+            .attr("class", "y label")
+            .attr("text-anchor", "middle")
+            .attr('x', -((VIS_HEIGHT/2)+MARGINS.top))
+            .attr("y", 6)
+            .attr("dy", ".75em")
+            .attr("transform", "rotate(-90)")
+            .text(s2);
+
         // have data points fly in (superfluous)
         FRAME2.selectAll("circle")
             .transition()
             .delay(function(d,i){return(i*3)})
             .duration(2000)
             .attr("cx", function (d) { return X_SCALE1(d[s1])+ MARGINS.left; } )
-            .attr("cy", function (d) { return Y_SCALE1(d[s2])+ MARGINS.left; } )
+            .attr("cy", function (d) { return Y_SCALE1(d[s2])+ MARGINS.left; } );
 
         // update positions for movement.
-
         for(let i=0;i<data.length;i++){
             last_positioned[i] = {'x':X_SCALE1(data[i][s1])+ MARGINS.left,
                 'y':Y_SCALE1(data[i][s2])+ MARGINS.left};
