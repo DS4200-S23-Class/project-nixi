@@ -16,8 +16,11 @@ const VIS_WIDTH = FRAME_WIDTH - MARGINS.left - MARGINS.right;
 let flip = true;
 // external scatter data
 let esd;
-d3.csv("graddata/Admission_Predict_Ver1.1.csv").then((td) => {esd = td});
-console.log(esd);
+d3.csv("graddata/Admission_Predict_Ver1.1.csv").then((td) => {
+    esd = td;
+    console.log(esd);
+});
+
 
 // changes color in response to score
 function color(s) {
@@ -27,6 +30,11 @@ function color(s) {
     else{
         return 'Blue';
     }
+}
+
+// rounds passed float to 4 decimal places
+function round_4(flt){
+    return Math.round(flt * 10000) / 10000;
 }
 
 // bar graph frame
@@ -42,8 +50,8 @@ function build_bar_plot() {
     d3.csv("graddata/bardata.csv").then((data) => {
 
         // different ways of formatting data for different functions.
-        let clms = {'0.0':0, '0.025':0, '0.05':0, '0.075':0, '0.1':0, '0.125':0, '0.15':0, '0.175':0, '0.2':0, '0.225':0, '0.25':0, '0.275':0, '0.3':0, '0.325':2, '0.35':3, '0.375':3, '0.4':4, '0.425':4, '0.45':13, '0.475':8, '0.5':11, '0.525':13, '0.55':19, '0.575':15, '0.6':25, '0.625':26, '0.65':32, '0.675':22, '0.7':52, '0.725':30, '0.75':32, '0.775':31, '0.8':31, '0.825':15, '0.85':24, '0.875':15, '0.9':28, '0.925':25, '0.95':17, '0.975':0};
-        let orig = [{'0.0':0}, {'0.025':0}, {'0.05':0}, {'0.075':0}, {'0.1':0}, {'0.125':0}, {'0.15':0}, {'0.175':0}, {'0.2':0}, {'0.225':0}, {'0.25':0}, {'0.275':0}, {'0.3':0}, {'0.325':2}, {'0.35':3}, {'0.375':3}, {'0.4':4}, {'0.425':4}, {'0.45':13}, {'0.475':8}, {'0.5':11}, {'0.525':13}, {'0.55':19}, {'0.575':15}, {'0.6':25}, {'0.625':26}, {'0.65':32}, {'0.675':22}, {'0.7':52}, {'0.725':30}, {'0.75':32}, {'0.775':31}, {'0.8':31}, {'0.825':15}, {'0.85':24}, {'0.875':15}, {'0.9':28}, {'0.925':25}, {'0.95':17}, {'0.975':0}];
+        let clms = {'0.0':0,'0.025':0,'0.05':0,'0.075':0,'0.1':0,'0.125':0,'0.15':0,'0.175':0,'0.2':0,'0.225':0,'0.25':0,'0.275':0,'0.3':0,'0.325':0,'0.35':4,'0.375':3,'0.4':1,'0.425':5,'0.45':11,'0.475':8,'0.5':9,'0.525':12,'0.55':17,'0.575':18,'0.6':19,'0.625':20,'0.65':40,'0.675':24,'0.7':45,'0.725':34,'0.75':34,'0.775':25,'0.8':38,'0.825':13,'0.85':27,'0.875':12,'0.9':30,'0.925':21,'0.95':26,'0.975':4};
+        let orig = [{'0.0':0},{'0.025':0},{'0.05':0},{'0.075':0},{'0.1':0},{'0.125':0},{'0.15':0},{'0.175':0},{'0.2':0},{'0.225':0},{'0.25':0},{'0.275':0},{'0.3':0},{'0.325':0},{'0.35':4},{'0.375':3},{'0.4':1},{'0.425':5},{'0.45':11},{'0.475':8},{'0.5':9},{'0.525':12},{'0.55':17},{'0.575':18},{'0.6':19},{'0.625':20},{'0.65':40},{'0.675':24},{'0.7':45},{'0.725':34},{'0.75':34},{'0.775':25},{'0.8':38},{'0.825':13},{'0.85':27},{'0.875':12},{'0.9':30},{'0.925':21},{'0.95':26},{'0.975':4}];
         let mdata = orig.map(d => {
             return {
                 score: Object.keys(d)[0],
@@ -64,25 +72,24 @@ function build_bar_plot() {
             .domain([0, MAX_Y3])
             .range([VIS_HEIGHT, 0]);
 
-        // x axis label
-        FRAME1.append("text")
-            .attr("class", "x label")
-            .attr("text-anchor", "middle")
-            .attr("x", (VIS_WIDTH / 2 + MARGINS.left / 2))
-            .attr("y", VIS_HEIGHT + MARGINS.top +MARGINS.bottom)
-            .text('Acceptance chance');
-        // y axis label
-        FRAME1.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "middle")
-            .attr('x', -((VIS_HEIGHT/2)+MARGINS.top))
-            .attr("y", 6)
-            .attr("dy", ".75em")
-            .attr("transform", "rotate(-90)")
-            .text('Number of students');
+        // tooltip design
+        let Tooltip = d3.select("#v1")
+            .append("div")
+            .style("opacity", 0)
+            .attr("class", "tooltip")
+            .attr('id', 'tt1')
+            .style("background-color", "#FEFBEA")
+            .style("border", "solid")
+            .style("border-width", "2px")
+            .style("padding", "2px");
+
 
         //mouseover interactivity, draws border and shows the selected points in the bar in the corresponding scatter
         let mouseover = function(event, d) {
+            // pertaining to tooltips
+            Tooltip
+                .style("opacity", 1);
+            // pertaining to highlighting
             if (flip){
                 flip = false;
                 document.getElementById('lobf').style.opacity = '.1';
@@ -91,7 +98,7 @@ function build_bar_plot() {
                 bar.style.strokeWidth = '2';
                 for (let i = 0; i < esd.length; i++){
                     let sel = document.getElementById(`dp${esd[i]['Serial No.']}`);
-                    if(parseFloat(d.score)-.012<=parseFloat(esd[i]['Chance of Admit']) && parseFloat(esd[i]['Chance of Admit'])<=parseFloat(d.score)+.012){
+                    if(round_4(parseFloat(d.score))-.0125<=round_4(parseFloat(esd[i]['Chance of Admit'])) && round_4(parseFloat(esd[i]['Chance of Admit']))<round_4(parseFloat(d.score))+.0125){
                         sel.style.opacity = '1';
                         //sel.style.fill = 'red';
                     }else{
@@ -101,8 +108,25 @@ function build_bar_plot() {
             }
         };
 
+        // populate the information about that point into tooltip
+        let mousemove = function(event, d) {
+            let lb = round_4(parseFloat(d['score']) - .0125);
+            let rb = round_4(parseFloat(d['score']) + .0125);
+            let plural;
+            if(d['count'] > 1){plural = 's have';}
+            else{plural = ' has';}
+            Tooltip
+                .html(`${d['count']} student${plural} an acceptance chance</br> within the range of ${lb} to ${rb}`)
+                .style("left", (d3.pointer(event)[0]+55) + "px")
+                .style("top", (d3.pointer(event)[1]+365) + "px");
+        };
+
         //reset plots upon cursor leaving
         let mouseleave = function() {
+            // pertaining to tooltips
+            Tooltip
+                .style("opacity", 0);
+            // pertaining to highlighting
             if(!flip){
                 flip = true;
                 document.getElementById('lobf').style.opacity = '.5';
@@ -132,6 +156,7 @@ function build_bar_plot() {
             .attr("fill", (d) => { return color(d.score); })
             .attr("opacity", 0.5)
             .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
             .on("mouseleave", mouseleave);
 
         // title
@@ -158,6 +183,21 @@ function build_bar_plot() {
             .attr("transform", "translate(" + MARGINS.left +
                 "," + MARGINS.top + ")")
             .call(d3.axisLeft(Y_SCALE3));
+
+        // x axis label
+        FRAME1.append("text")
+            .attr("text-anchor", "middle")
+            .attr("x", (VIS_WIDTH / 2 + MARGINS.left / 2))
+            .attr("y", VIS_HEIGHT + MARGINS.top +MARGINS.bottom)
+            .text('Acceptance chance');
+        // y axis label
+        FRAME1.append("text")
+            .attr("text-anchor", "middle")
+            .attr('x', -((VIS_HEIGHT/2)+MARGINS.top))
+            .attr("y", 6)
+            .attr("dy", ".75em")
+            .attr("transform", "rotate(-90)")
+            .text('Number of students');
     });
 }
 
@@ -338,14 +378,12 @@ function build_scatter_plot(flag) {
 
         // x axis label
         FRAME2.append("text")
-            .attr("class", "x label")
             .attr("text-anchor", "middle")
             .attr("x", (VIS_WIDTH / 2 + MARGINS.left / 2))
             .attr("y", VIS_HEIGHT + MARGINS.top +MARGINS.bottom)
             .text(s1);
         // y axis label
         FRAME2.append("text")
-            .attr("class", "y label")
             .attr("text-anchor", "middle")
             .attr('x', -((VIS_HEIGHT/2)+MARGINS.top))
             .attr("y", 6)
