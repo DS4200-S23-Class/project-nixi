@@ -118,7 +118,7 @@ function build_bar_plot() {
             Tooltip
                 .html(`${d['count']} student${plural} an acceptance chance</br> within the range of ${lb} to ${rb}`)
                 .style("left", (d3.pointer(event)[0]+55) + "px")
-                .style("top", (d3.pointer(event)[1]+365) + "px");
+                .style("top", (d3.pointer(event)[1]+465) + "px");
         };
 
         //reset plots upon cursor leaving
@@ -280,7 +280,7 @@ function build_scatter_plot(flag) {
                     '<br>TOEFL Score: ' + d['TOEFL Score'] +
                     '<br>University Rating: ' + d['University Rating'])
                 .style("left", (d3.pointer(event)[0]+995) + "px")
-                .style("top", (d3.pointer(event)[1]+315) + "px");
+                .style("top", (d3.pointer(event)[1]+495) + "px");
         };
 
         // hide tooltip on exit
@@ -301,10 +301,6 @@ function build_scatter_plot(flag) {
             .data(data)
             .enter()
             .append("circle")
-            //.attr("cx", (d) => { return (X_SCALE1(d[s1]) + MARGINS.left); })
-            //.attr("cy", (d) => { return (Y_SCALE1(d[s2]) + MARGINS.left); })
-            //.attr("cx",((X_SCALE1(MIN_X1)+X_SCALE1(MAX_X1))/2) + MARGINS.left)
-            //.attr("cy",((Y_SCALE1(MIN_Y1)+Y_SCALE1(MAX_Y1))/2) + MARGINS.left)
             .attr("cx", (d) => { return last_positioned[parseInt(d['Serial No.'])-1]['x']; })
             .attr("cy", (d) => { return last_positioned[parseInt(d['Serial No.'])-1]['y']; })
             .attr("r", 3)
