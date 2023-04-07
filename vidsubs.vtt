@@ -1,0 +1,214 @@
+WEBVTT
+
+1
+00:00:00.240 --> 00:00:02.580
+Hey I'm Nicholas Gjuraj our group did graduate
+
+2
+00:00:02.580 --> 00:00:05.160
+student admission predictions.
+
+3
+00:00:05.160 --> 00:00:08.039
+So our visualization, it's based off
+
+4
+00:00:08.039 --> 00:00:11.400
+of a data set of about 500 students with
+
+5
+00:00:11.400 --> 00:00:13.740
+information pertaining to their
+
+6
+00:00:13.740 --> 00:00:16.020
+admission, things like their GRE and
+
+7
+00:00:16.020 --> 00:00:18.900
+TOEFL scores, University rating, statement
+
+8
+00:00:18.900 --> 00:00:20.699
+of purpose, letter of recommendation on
+
+9
+00:00:20.699 --> 00:00:23.640
+the scale of one to five, cumulative GPA
+
+10
+00:00:23.640 --> 00:00:26.640
+research as a binary value,
+
+11
+00:00:26.640 --> 00:00:30.060
+and a chance of admission from zero to
+
+12
+00:00:30.060 --> 00:00:31.019
+one.
+
+13
+00:00:31.019 --> 00:00:33.420
+So as you can see on the left we have
+
+14
+00:00:33.420 --> 00:00:36.000
+students binned together by similar
+
+15
+00:00:36.000 --> 00:00:37.860
+acceptance chances and on the right we
+
+16
+00:00:37.860 --> 00:00:41.399
+have a scatter plot to compare scores
+
+17
+00:00:41.399 --> 00:00:43.440
+against each other so we can see
+
+18
+00:00:43.440 --> 00:00:46.800
+correlation between certain things. So we
+
+19
+00:00:46.800 --> 00:00:49.739
+can see between test of English as a
+
+20
+00:00:49.739 --> 00:00:51.420
+foreign language and GRE there's a
+
+21
+00:00:51.420 --> 00:00:54.180
+positive association between students
+
+22
+00:00:54.180 --> 00:00:56.219
+who perform well on
+
+23
+00:00:56.219 --> 00:00:58.620
+one tend to perform well on the other, and
+
+24
+00:00:58.620 --> 00:01:01.739
+we can highlight students to see other
+
+25
+00:01:01.739 --> 00:01:04.379
+attributes about them
+
+26
+00:01:04.379 --> 00:01:07.140
+so like but whenever we hover over
+
+27
+00:01:07.140 --> 00:01:09.420
+students in the bar graph like there
+
+28
+00:01:09.420 --> 00:01:11.119
+are four students with a very low
+
+29
+00:01:11.119 --> 00:01:14.100
+acceptance chance and they also have a
+
+30
+00:01:14.100 --> 00:01:17.580
+low TOEFL and GRE scores, so perhaps
+
+31
+00:01:17.580 --> 00:01:20.220
+there's some correlation going on there.
+
+32
+00:01:20.220 --> 00:01:23.460
+But hovering over students helps
+
+33
+00:01:23.460 --> 00:01:25.140
+and the
+
+34
+00:01:25.140 --> 00:01:27.600
+having the color-coded accepted versus
+
+35
+00:01:27.600 --> 00:01:30.240
+not accepted also helps because we
+
+36
+00:01:30.240 --> 00:01:32.100
+can isolate certain students so we can
+
+37
+00:01:32.100 --> 00:01:36.180
+see this student has a pretty low TOEFL
+
+38
+00:01:36.180 --> 00:01:38.159
+and a pretty low GRE but they still got
+
+39
+00:01:38.159 --> 00:01:40.799
+accepted and we can look and see, oh they
+
+40
+00:01:40.799 --> 00:01:42.720
+have a high GPA and their University
+
+41
+00:01:42.720 --> 00:01:45.659
+rating is pretty weak so maybe that's
+
+42
+00:01:45.659 --> 00:01:47.579
+why they got accepted. so how about we
+
+43
+00:01:47.579 --> 00:01:50.600
+look now for cumulative
+
+44
+00:01:51.439 --> 00:01:54.360
+GPA against chance of admission to see
+
+45
+00:01:54.360 --> 00:01:56.159
+if that's a really strong correlation
+
+46
+00:01:56.159 --> 00:01:57.960
+since he got accepted or she got
+
+47
+00:01:57.960 --> 00:02:00.180
+accepted. And as you can see there's a
+
+48
+00:02:00.180 --> 00:02:01.979
+very positive correlation between the
+
+49
+00:02:01.979 --> 00:02:03.840
+two, and this kind of exploratory
+
+50
+00:02:03.840 --> 00:02:06.600
+analysis and isolating certain students
+
+51
+00:02:06.600 --> 00:02:08.459
+with the bar graph on the left and
+
+52
+00:02:08.459 --> 00:02:09.959
+looking at the correlation is how you
+
+53
+00:02:09.959 --> 00:02:13.039
+use our visualization.
+
